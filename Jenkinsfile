@@ -33,17 +33,21 @@ pipeline {
         }
 
         stage('Build') {
-            steps {
-                echo "Building version ${APP_VERSION} for ${params.ENVIRONMENT} environment"
-                bat '''
-                    echo Simulating build process...
-                    if not exist build mkdir build
-                    copy *.js build
-                    echo Build completed successfully!
-                    echo App version: %APP_VERSION% > build\\version.txt
-                '''
-            }
-        }
+    steps {
+        echo "Building version ${APP_VERSION} for ${params.ENVIRONMENT} environment"
+        bat '''
+            echo Simulating build process...
+            if not exist build mkdir build
+            if exist src (
+                copy src\\*.js build\\
+            ) else (
+                echo No src folder found!
+            )
+            echo Build completed successfully!
+            echo App version: %APP_VERSION% > build\\version.txt
+        '''
+    }
+}
 
         stage('Test') {
             when {
